@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/index', name: '_app_')]
+class IndexController extends AbstractController
+{
+    #[Route('', name: 'render_main_page', methods: ['GET'])]
+    public function index(): Response
+    {
+        return $this->render('index/index.html.twig');
+    }
+}
