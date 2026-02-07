@@ -15,7 +15,11 @@ class Link
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private(set) ?int $id = null;
-    private(set) ?string $urlTarget;
-    private(set) ?string $shortCode;
+    public ?int $id = null;
+
+    #[ORM\Column(name: 'urlTarget')]
+    public ?string $urlTarget = null;
+
+    #[ORM\Column(name: 'shortCode')]
+    public ?string $shortCode = null;
 }

@@ -12,6 +12,8 @@ services:
       - "./.docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:rw"
 
   php-fpm:
+    environment:
+      APP_ENV: DevDocker
     build:
       dockerfile: backend/Dockerfile
       context: .

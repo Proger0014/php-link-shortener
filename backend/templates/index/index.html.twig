@@ -4,4 +4,29 @@
 
 {% block main %}
 
+    <div class="rounded-2 p-5 bg-body bg-body-secondary">
+        {{ form_start(form) }}
+            <div class="d-flex justify-content-between align-items-end">
+                <div class="flex-grow-1">
+                    {{ form_row(form.urlTarget) }}
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary ms-5 mb-3">Сократить</button>
+                </div>
+            </div>
+        {{ form_end(form) }}
+
+        {% if currentLink %}
+            <div>
+                <p><strong>Текущая ссылка</strong></p>
+                <p><strong>Сокращенная ссылка:</strong>
+                    <a href="{{ url('base_redirect', { code: currentLink.shortCode }) }}">{{ url('base_redirect', { code: currentLink.shortCode }) }}</a>
+                </p>
+                <p><strong>Полная ссылка:</strong>
+                    <a href="{{ (currentLink.urlTarget) }}" target="_blank">{{ (currentLink.urlTarget) }}</a>
+                </p>
+            </div>
+        {% endif %}
+    </div>
 {% endblock main %}

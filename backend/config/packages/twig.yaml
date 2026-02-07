@@ -1,5 +1,6 @@
 twig:
     file_name_pattern: '*.twig'
+    form_themes: ['bootstrap_5_layout.html.twig']
     globals:
         owner_name: 'proger0014'
         owner_url: 'https://github.com/proger0014'
