@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/index', name: '_app_')]
+#[Route('/index', name: 'base_')]
 class IndexController extends AbstractController
 {
-    #[Route('', name: 'render_main_page', methods: ['GET'])]
+    #[Route('', name: 'index', methods: ['GET'])]
     public function index(): Response
     {
         return $this->render('index/index.html.twig');

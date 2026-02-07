@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="d-flex min-vh-100 flex-column justify-content-between">
+        <header class="bg-body bg-body-tertiary py-3">
+            <div class="container">
+                <a href="{{ path('base_index') }}">Сокращатель ссылок</a>
+            </div>
+        </header>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="container">
+                    <div class="alert alert-dismissible alert-{{ label }} fade show my-3" role="alert">
+                        {{ message }}
+
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <main class="flex-grow-1 m-3">
+            <div class="container">
+                {% block main %}
+                {% endblock main %}
+            </div>
+        </main>
+
+        <footer class="bg-black py-5 text-white">
+            <div class="container">
+                <div class="d-flex justify-content-between">
+                    <p>
+                        <a href="{{ owner_url }}" target="_blank">{{ owner_name }}</a>
+                    </p>
+                    <p class="m-0">Все права не защищены (C)</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock body %}
+
+

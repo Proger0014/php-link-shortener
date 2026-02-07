@@ -1,5 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        owner_name: 'proger0014'
+        owner_url: 'https://github.com/proger0014'
 
 when@test:
     twig:
