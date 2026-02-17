@@ -7,15 +7,20 @@ use App\Util\LinkUtil;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 /**
  * @extends ServiceEntityRepository<Link>
  */
+#[WithMonologChannel('persistence')]
 class LinkRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
+// Target служит как Qualifier из Spring, который позволяет указать имя бина, который должен быть внедрен
+//         #[Target('monolog.logger.persistence')]
         private LoggerInterface $logger)
     {
         parent::__construct($registry, Link::class);
