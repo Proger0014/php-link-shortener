@@ -20,10 +20,10 @@
         {% if currentLink %}
             <div>
                 <p><strong>Текущая ссылка</strong></p>
-                <p><strong>Сокращенная ссылка:</strong>
+                <p {% if app.environment == 'test' %}id="link-short"{% endif %}><strong>Сокращенная ссылка:</strong>
                     <a href="{{ url('base_redirect', { code: currentLink.shortCode }) }}">{{ url('base_redirect', { code: currentLink.shortCode }) }}</a>
                 </p>
-                <p><strong>Полная ссылка:</strong>
+                <p {% if app.environment == 'test' %}id="link-full"{% endif %}><strong>Полная ссылка:</strong>
                     <a href="{{ (currentLink.urlTarget) }}" target="_blank">{{ (currentLink.urlTarget) }}</a>
                 </p>
             </div>
