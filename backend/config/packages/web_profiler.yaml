@@ -1,10 +1,12 @@
-when@dev:
+when@DevHost:
     web_profiler:
         toolbar: true
 
     framework:
         profiler:
             collect_serializer_data: true
+
+when@DevDocker: &web_profiler_DevHost
 
 when@test:
     framework:
