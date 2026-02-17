@@ -1,4 +1,4 @@
-when@dev:
+when@DevHost: &webProfilerDev
     web_profiler_wdt:
         resource: '@WebProfilerBundle/Resources/config/routing/wdt.php'
         prefix: /_wdt
@@ -6,3 +6,5 @@ when@dev:
     web_profiler_profiler:
         resource: '@WebProfilerBundle/Resources/config/routing/profiler.php'
         prefix: /_profiler
+
+when@DevDocker: *webProfilerDev

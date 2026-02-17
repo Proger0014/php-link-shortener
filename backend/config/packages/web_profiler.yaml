@@ -1,4 +1,4 @@
-when@DevHost: &profilerBaseDev
+when@DevHost: &profilerDev
     web_profiler:
         toolbar: true
 
@@ -6,7 +6,7 @@ when@DevHost: &profilerBaseDev
         profiler:
             collect_serializer_data: true
 
-when@DevDocker: *profilerBaseDev
+when@DevDocker: *profilerDev
 
 when@test:
     framework:
