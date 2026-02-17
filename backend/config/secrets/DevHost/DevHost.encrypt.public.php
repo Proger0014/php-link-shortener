@@ -1,3 +1,0 @@
-<?php // DevHost.encrypt.public on Tue, 17 Feb 2026 05:02:32 +0000
-
-return "\x16\x1D\x8C\xC2\x93\x3A-b\x98\x3EPt\x08\x9BH\x87\x23\xD8\x87N\xBDK6\xDE9\x1FI7EN\xC8A";
