@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\LinkAggregate;
 use App\Entity\Link;
 use App\Entity\LinkForm;
+use App\Integration\FaviconExtractor;
 use App\Repository\LinkRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +25,7 @@ class IndexController extends AbstractController
 
     function __construct(
         private readonly LinkRepository $linkRepository,
+        private readonly FaviconExtractor $faviconExtractor,
         private readonly LoggerInterface $logger
     ) { }
 
@@ -38,11 +41,12 @@ class IndexController extends AbstractController
         $currentLinkId = $session->get(self::CURRENT_LINK) ?: 0;
         $currentLink = $this->linkRepository->find($currentLinkId);
         $links = $this->getLinks($session);
+        $linksEnriched = $this->linksEnrich($links);
 
         return $this->render('index/index.html.twig', [
             'form' => $form,
             'currentLink' => $currentLink,
-            'links' => $links
+            'links' => $linksEnriched
         ]);
     }
 
@@ -123,6 +127,25 @@ class IndexController extends AbstractController
         return $qb
             ->orderBy('l.id', 'DESC')
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
+    }
+
+    /**
+     * @param list<Link> $source
+     *
+     * @return list<LinkAggregate>
+     */
+    private function linksEnrich(array $source): array
+    {
+        $this->logger->debug("Процесс обогащения ссылок");
+
+        return array_map(function (Link $item) {
+            $icon = $this->faviconExtractor->extract($item->urlTarget);
+
+            return new LinkAggregate(
+                link: $item,
+                icon: $icon
+            );
+        }, $source);
     }
 }
