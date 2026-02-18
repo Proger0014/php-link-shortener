@@ -7,8 +7,8 @@ namespace App\Controller;
 use App\Dto\LinkAggregate;
 use App\Entity\Link;
 use App\Entity\LinkForm;
-use App\Integration\FaviconExtractor;
 use App\Repository\LinkRepository;
+use App\Service\LinkService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +25,7 @@ class IndexController extends AbstractController
 
     function __construct(
         private readonly LinkRepository $linkRepository,
-        private readonly FaviconExtractor $faviconExtractor,
+        private readonly LinkService $linkService,
         private readonly LoggerInterface $logger
     ) { }
 
@@ -140,7 +140,7 @@ class IndexController extends AbstractController
         $this->logger->debug("Процесс обогащения ссылок");
 
         return array_map(function (Link $item) {
-            $icon = $this->faviconExtractor->extract($item->urlTarget);
+            $icon = $this->linkService->extractIcon($item->urlTarget);
 
             return new LinkAggregate(
                 link: $item,

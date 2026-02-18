@@ -8,12 +8,14 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 readonly class FaviconExtractor
 {
     function __construct(
-        private string $defaultIcon,
+        private CacheInterface $cache,
         private HttpClientInterface $client,
         private RequestStack $requestStack,
         private LoggerInterface $logger
@@ -25,25 +27,35 @@ readonly class FaviconExtractor
             'url' => $url
         ]);
 
-        $this->logger->debug("Получение html страницы");
+        $this->logger->debug("Получение из кэша html страницы");
 
-        $response = $this->client->request('GET', $url, [
-            'headers' => [
-                'User-Agent' => $this->requestStack->getCurrentRequest()->headers->get('User-Agent'),
-            ]
-        ]);
+        $content = $this->cache->get(hash('md5', $url), function (ItemInterface $item) use ($url) {
+            $this->logger->debug("Получение html страницы");
 
-        if ($response->getStatusCode() !== Response::HTTP_OK) {
-            $this->logger->warning("Не удалось получить html страницу");
+            $response = $this->client->request('GET', $url, [
+                'headers' => [
+                    'User-Agent' => $this->requestStack->getCurrentRequest()->headers->get('User-Agent'),
+                ]
+            ]);
 
-            return $this->defaultIcon;
-        }
+            if ($response->getStatusCode() !== Response::HTTP_OK) {
+                $this->logger->warning("Не удалось получить html страницу");
+            }
 
-        try {
-            $content = $response->getContent();
-        } catch (\Throwable $exception) {
-            $this->logger->warning("Не удалось получить контент из запроса");
-            return $this->defaultIcon;
+            try {
+                $content = $response->getContent();
+                $this->logger->debug("Html страница успешно была получена");
+                return $content;
+            } catch (\Throwable $exception) {
+                $item->expiresAfter(0);
+                $this->logger->warning("Не удалось получить контент из запроса");
+            }
+
+            return null;
+        });
+
+        if (is_null($content)) {
+            return null;
         }
 
         $crawler = new Crawler($content);
@@ -51,28 +63,10 @@ readonly class FaviconExtractor
             ->filter('head > link[rel="icon"]')
             ->first();
 
-        if ($iconItem->count() !== 0) {
-            $iconItemRef = $iconItem->attr('href');
-
-            $parsedItemRef = parse_url($iconItemRef);
-            if (!isset($parsedItemRef['scheme']) || !isset($parsedItemRef['host'])) {
-                $parsedUrl = parse_url($url);
-                $icon = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . $parsedItemRef['path'];
-            } else {
-                $icon = $iconItemRef;
-            }
-
-
-            $this->logger->debug("Успешно удалось извлечь иконку {icon}", [
-                'icon' => $icon
-            ]);
-        } else {
-            $icon = $this->defaultIcon;
-
-            $this->logger->debug("Была установлена дефолтная иконка");
+        if ($iconItem->count() > 0) {
+            $result = $iconItem->attr('href');
         }
 
-
-        return $icon;
+        return $result;
     }
 }
