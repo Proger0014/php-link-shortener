@@ -102,6 +102,8 @@ class IndexController extends AbstractController
     }
 
     /**
+     * TODO: также поправить, если sessions пустой, то и вернуть должен пустой массив. И вынести это в LinkService
+     *
      * @param SessionInterface $session
      *
      * @return list<Link>
