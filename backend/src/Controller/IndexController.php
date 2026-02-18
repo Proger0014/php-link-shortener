@@ -15,6 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/web/index', name: 'base_')]
 class IndexController extends AbstractController
 {
+    const string CURRENT_LINK = 'current_link';
+
     function __construct(
         private readonly LinkRepository $linkRepository
     ) { }
@@ -22,16 +24,15 @@ class IndexController extends AbstractController
     #[Route('', name: 'index_get', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $link = new Link();
-        $form = $this->createForm(LinkForm::class, $link, [
+        $form = $this->createForm(LinkForm::class, new Link(), [
             'method' => 'POST',
             'action' => $this->generateUrl('base_index_post')
         ]);
 
         $session = $request->getSession();
+        $currentLinkId = $session->get(self::CURRENT_LINK) ?: 0;
 
-        $links = $session->get('links') ?: [];
-        $currentLink = array_pop($links);
+        $currentLink = $this->linkRepository->find($currentLinkId);
 
         return $this->render('index/index.html.twig', [
             'form' => $form,
@@ -43,22 +44,13 @@ class IndexController extends AbstractController
     public function createLink(Request $request): Response
     {
         $link = new Link();
-
         $form = $this->createForm(LinkForm::class, $link);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->linkRepository->save($link);
 
-            if ($request->getSession()->has('links')) {
-                $exists = $request->getSession()->get('links');
-                $exists[] = $link;
-            } else {
-                $exists = [$link];
-            }
-
-            $request->getSession()->set('links', $exists);
+            $request->getSession()->set(self::CURRENT_LINK, $link->id);
         } else {
             $this->addFlash('danger', 'Не удалось сократить ссылку');
         }
