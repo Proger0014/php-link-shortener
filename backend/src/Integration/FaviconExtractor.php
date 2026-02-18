@@ -13,6 +13,11 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * TODO: Добавить учитывание webmanifest.json
+ *
+ * пример: https://symfony.com/blog/new-in-symfony-4-1-http-header-improvements
+ */
 readonly class FaviconExtractor
 {
     function __construct(

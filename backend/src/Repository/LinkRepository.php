@@ -26,6 +26,9 @@ class LinkRepository extends ServiceEntityRepository
         parent::__construct($registry, Link::class);
     }
 
+    /**
+     * TODO: Вынести бизнес логику в LinkService
+     */
     public function save(Link $link): void
     {
         $this->logger->debug("Процесс сохрания Link");

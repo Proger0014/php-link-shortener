@@ -8,6 +8,9 @@ use App\Config\LinkConfig;
 use App\Integration\FaviconExtractor;
 use Psr\Log\LoggerInterface;
 
+/**
+ * TODO: Вынести сюда логику работы с LinkRepository
+ */
 class LinkService
 {
     function __construct(
