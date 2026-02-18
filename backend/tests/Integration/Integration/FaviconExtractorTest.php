@@ -42,6 +42,58 @@ class FaviconExtractorTest extends TestCase
         $this->assertEquals($expectedResponse, $actualResponse);
     }
 
+    #[Test]
+    public function extract_notHaveFavicon_shouldReturnNull()
+    {
+        // Arrange
+        /** @var FaviconExtractorConfig $config */
+        $config = static::getContainer()->get(FaviconExtractorConfig::class);
+
+        $requestUri = $config->notHaveFavicon;
+
+        $cache = static::getContainer()->get(CacheInterface::class);
+        $cache->delete(CacheUtil::createKey($requestUri));
+
+        /** @var RequestStack $requestStack */
+        $requestStack = static::getContainer()->get(RequestStack::class);
+        $requestStack->push(self::createRequest($requestUri));
+
+        /** @var FaviconExtractor $faviconExtractor */
+        $faviconExtractor = static::getContainer()->get(FaviconExtractor::class);
+
+        // Act
+        $actualResponse = $faviconExtractor->extract($requestUri);
+
+        // Assert
+        $this->assertNull($actualResponse);
+    }
+
+    #[Test]
+    public function extract_notSuccessResponse_shouldReturnNull()
+    {
+        // Arrange
+        /** @var FaviconExtractorConfig $config */
+        $config = static::getContainer()->get(FaviconExtractorConfig::class);
+
+        $requestUri = $config->notSuccessResponse;
+
+        $cache = static::getContainer()->get(CacheInterface::class);
+        $cache->delete(CacheUtil::createKey($requestUri));
+
+        /** @var RequestStack $requestStack */
+        $requestStack = static::getContainer()->get(RequestStack::class);
+        $requestStack->push(self::createRequest($requestUri));
+
+        /** @var FaviconExtractor $faviconExtractor */
+        $faviconExtractor = static::getContainer()->get(FaviconExtractor::class);
+
+        // Act
+        $actualResponse = $faviconExtractor->extract($requestUri);
+
+        // Assert
+        $this->assertNull($actualResponse);
+    }
+
     public static function createRequest(String $uri): Request
     {
         return Request::create(

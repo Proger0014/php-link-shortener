@@ -31,4 +31,6 @@ when@test:
         App\Tests\Integration\NonTest\Config\FaviconExtractorConfig:
             public: true
             arguments:
-                '$haveFavicon': '%env(HAVE_FAVICON_URL)%'
+                '$haveFavicon': '%env(FAVICON_HAVE_URL)%'
+                '$notHaveFavicon': '%env(FAVICON_NOT_HAVE_URL)%'
+                '$notSuccessResponse': '%env(FAVICON_NOT_SUCCESS_RESPONSE)%'

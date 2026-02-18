@@ -8,5 +8,7 @@ readonly class FaviconExtractorConfig
 {
     public function __construct(
         public string $haveFavicon,
+        public string $notHaveFavicon,
+        public string $notSuccessResponse
     ) { }
 }

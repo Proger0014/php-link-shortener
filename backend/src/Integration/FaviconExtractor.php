@@ -41,6 +41,7 @@ readonly class FaviconExtractor
 
             if ($response->getStatusCode() !== Response::HTTP_OK) {
                 $this->logger->warning("Не удалось получить html страницу");
+                return null;
             }
 
             try {
