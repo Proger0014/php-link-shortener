@@ -67,6 +67,8 @@ readonly class FaviconExtractor
 
         if ($iconItem->count() > 0) {
             $result = $iconItem->attr('href');
+        } else {
+            $result = null;
         }
 
         return $result;
