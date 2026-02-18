@@ -28,32 +28,32 @@
                 </p>
             </div>
         {% endif %}
+    </div>
 
-        {% if links|length > 0 %}
-            <div class="mt-5">
-                <h3>Ранее сокращенные ссылки ({{ links|length }})</h3>
+    {% if links|length > 0 %}
+        <div class="mt-5">
+            <h3>Ранее сокращенные ссылки ({{ links|length }})</h3>
 
-                <div class="list-group">
-                    {% for link in links %}
-                        {% set linkUrl =  url('base_redirect', { code: link.link.shortCode }) %}
-                        <div class="list-group-item">
+            <div class="list-group">
+                {% for link in links %}
+                    {% set linkUrl =  url('base_redirect', { code: link.link.shortCode }) %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
                             <div class="d-flex justify-content-between">
-                                <div class="d-flex justify-content-between">
-                                    <div class="d-flex align-items-center me-2">
-                                        <img width="40" height="40" src="{{ link.icon }}" alt="favicon of {{ link.link.urlTarget }}">
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-between align-items-start">
-                                        <a href="{{ linkUrl }}" target="_blank">
-                                            {{ linkUrl }}
-                                        </a>
-                                        <small>{{ link.link.urlTarget  }}</small>
-                                    </div>
+                                <div class="d-flex align-items-center me-2">
+                                    <img width="40" height="40" src="{{ link.icon }}" alt="favicon of {{ link.link.urlTarget }}">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between align-items-start">
+                                    <a href="{{ linkUrl }}" target="_blank">
+                                        {{ linkUrl }}
+                                    </a>
+                                    <small>{{ link.link.urlTarget  }}</small>
                                 </div>
                             </div>
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 {% endblock main %}
