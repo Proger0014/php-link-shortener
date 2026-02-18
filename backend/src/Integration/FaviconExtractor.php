@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Integration;
 
+use App\Util\CacheUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -29,7 +30,7 @@ readonly class FaviconExtractor
 
         $this->logger->debug("Получение из кэша html страницы");
 
-        $content = $this->cache->get(hash('md5', $url), function (ItemInterface $item) use ($url) {
+        $content = $this->cache->get(CacheUtil::createKey($url), function (ItemInterface $item) use ($url) {
             $this->logger->debug("Получение html страницы");
 
             $response = $this->client->request('GET', $url, [
