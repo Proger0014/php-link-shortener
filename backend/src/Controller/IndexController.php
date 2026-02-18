@@ -7,18 +7,23 @@ namespace App\Controller;
 use App\Entity\Link;
 use App\Entity\LinkForm;
 use App\Repository\LinkRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/web/index', name: 'base_')]
 class IndexController extends AbstractController
 {
     const string CURRENT_LINK = 'current_link';
+    const string LINKS = 'links';
+    const int LIMIT_LINKS = 50;
 
     function __construct(
-        private readonly LinkRepository $linkRepository
+        private readonly LinkRepository $linkRepository,
+        private readonly LoggerInterface $logger
     ) { }
 
     #[Route('', name: 'index_get', methods: ['GET'])]
@@ -31,12 +36,13 @@ class IndexController extends AbstractController
 
         $session = $request->getSession();
         $currentLinkId = $session->get(self::CURRENT_LINK) ?: 0;
-
         $currentLink = $this->linkRepository->find($currentLinkId);
+        $links = $this->getLinks($session);
 
         return $this->render('index/index.html.twig', [
             'form' => $form,
             'currentLink' => $currentLink,
+            'links' => $links
         ]);
     }
 
@@ -50,7 +56,9 @@ class IndexController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->linkRepository->save($link);
 
-            $request->getSession()->set(self::CURRENT_LINK, $link->id);
+            $session = $request->getSession();
+            $session->set(self::CURRENT_LINK, $link->id);
+            $this->putLink($session, $link);
         } else {
             $this->addFlash('danger', 'Не удалось сократить ссылку');
         }
@@ -71,5 +79,50 @@ class IndexController extends AbstractController
         }
 
         return $this->redirect($existsLink->urlTarget);
+    }
+
+    private function putLink(SessionInterface $session, Link $link): void
+    {
+        $this->logger->debug("Добавление в сессию Links[id={$link->id}]");
+
+        $existsLinks = $session->get(self::LINKS) ?: [];
+
+        if (count($existsLinks) >= self::LIMIT_LINKS) {
+            $this->logger->debug("Кол-во элементов в сессии превышает {limit}, последний элемент будет удален");
+            array_pop($existsLinks);
+        }
+
+        array_unshift($existsLinks, $link->id);
+
+        $session->set(self::LINKS, $existsLinks);
+    }
+
+    /**
+     * @param SessionInterface $session
+     *
+     * @return list<Link>
+     */
+    private function getLinks(SessionInterface $session): array
+    {
+        $linksId = $session->get(self::LINKS) ?: [];
+
+        $this->logger->debug("Изьято Link из сессии в кол-ве {count}", [
+            'count' => count($linksId)
+        ]);
+
+        $qb = $this->linkRepository->createQueryBuilder('l');
+
+        $counter = 0;
+        foreach ($linksId as $linkId) {
+            $qb
+                ->orWhere('l.id = :linkId' . $counter)
+                ->setParameter('linkId' . $counter, $linkId);
+            $counter++;
+        }
+
+        return $qb
+            ->orderBy('l.id', 'DESC')
+            ->getQuery()
+            ->getArrayResult();
     }
 }
