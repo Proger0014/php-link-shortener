@@ -13,7 +13,10 @@ class LinkForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('urlTarget', UrlType::class)
+        $builder
+            ->add('urlTarget', UrlType::class, [
+                'label' => 'Ссылка'
+            ])
             ->setMethod($options['method'] ?: 'POST')
             ->setAction($options['action']);
     }
